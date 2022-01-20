@@ -494,5 +494,13 @@ describe('Feisty Print contract', function () {
       expect(await tokenContract.balanceOf(feistyPrintContract.address)).to.equal(0);
       expect(await tokenContract.balanceOf(owner.address)).to.equal(TOKEN_COUNT);
     });
+
+    it('Should emit a PriceUpdated event', async function () {
+      const newPrice = 50;
+
+      expect(
+        await feistyPrintContract.setPrice(newPrice)
+      ).to.emit(feistyPrintContract, 'PriceUpdated').withArgs(PRICE, newPrice);
+    });
   });
 });

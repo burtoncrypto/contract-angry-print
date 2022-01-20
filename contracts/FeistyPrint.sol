@@ -12,6 +12,7 @@ contract FeistyPrint is ERC721Enumerable, Ownable {
 
   event Printed(address sender, uint256 tokenId);
   event Redeemed(address sender, uint256 tokenId);
+  event PriceUpdated(uint256 oldPrice, uint256 newPrice);
 
   IERC20 private immutable _token;
   mapping(uint256 => uint256) _tokenPrices;
@@ -32,6 +33,8 @@ contract FeistyPrint is ERC721Enumerable, Ownable {
 
   // -- Admin -- //
   function setPrice(uint256 price_) external onlyOwner {
+    emit PriceUpdated(_price, price_);
+
     _price = price_;
   }
 
@@ -61,7 +64,7 @@ contract FeistyPrint is ERC721Enumerable, Ownable {
     return _tokenURI;
   }
 
-  function contractURI() external view returns (string memory) {
+  function contractURI() public view returns (string memory) {
     return _contractURI;
   }
   // -- Accessors -- //
@@ -73,17 +76,18 @@ contract FeistyPrint is ERC721Enumerable, Ownable {
 
   function printMultiple(uint256 count) public {
     require(count <= 10, "FeistyPrint: max 10 prints");
-    _token.transferFrom(_msgSender(), address(this), _price * count);
 
     for (uint i = 0; i < count; i++) {
       uint256 tokenId = _mints.current();
 
-      _safeMint(_msgSender(), tokenId);
-      _tokenPrices[tokenId] = _price;
-      _mints.increment();
-
       emit Printed(_msgSender(), tokenId);
+      _tokenPrices[tokenId] = _price;
+
+      _safeMint(_msgSender(), tokenId);
+      _mints.increment();
     }
+
+    _token.transferFrom(_msgSender(), address(this), _price * count);
   }
 
   function redeem() external {
@@ -93,10 +97,10 @@ contract FeistyPrint is ERC721Enumerable, Ownable {
   function redeem(uint256 tokenId) public {
     require(ownerOf(tokenId) == _msgSender(), "FeistyPrint: sender does not own token");
 
+    emit Redeemed(_msgSender(), tokenId);
+
     _burn(tokenId);
     _token.transfer(_msgSender(), _tokenPrices[tokenId]);
-
-    emit Redeemed(_msgSender(), tokenId);
   }
 
   function redeemMultiple(uint256 count) public {
