@@ -10,6 +10,9 @@ contract FeistyPrint is ERC721Enumerable, Ownable {
   using SafeERC20 for IERC20;
   using Counters for Counters.Counter;
 
+  event Printed(address sender, uint256 tokenId);
+  event Redeemed(address sender, uint256 tokenId);
+
   IERC20 private immutable _token;
   mapping(uint256 => uint256) _tokenPrices;
 
@@ -73,9 +76,13 @@ contract FeistyPrint is ERC721Enumerable, Ownable {
     _token.transferFrom(_msgSender(), address(this), _price * count);
 
     for (uint i = 0; i < count; i++) {
-      _safeMint(_msgSender(), _mints.current());
-      _tokenPrices[_mints.current()] = _price;
+      uint256 tokenId = _mints.current();
+
+      _safeMint(_msgSender(), tokenId);
+      _tokenPrices[tokenId] = _price;
       _mints.increment();
+
+      emit Printed(_msgSender(), tokenId);
     }
   }
 
@@ -88,6 +95,8 @@ contract FeistyPrint is ERC721Enumerable, Ownable {
 
     _burn(tokenId);
     _token.transfer(_msgSender(), _tokenPrices[tokenId]);
+
+    emit Redeemed(_msgSender(), tokenId);
   }
 
   function redeemMultiple(uint256 count) public {

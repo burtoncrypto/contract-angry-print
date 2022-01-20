@@ -127,6 +127,12 @@ describe('Feisty Print contract', function () {
       expect(await tokenContract.balanceOf(owner.address)).to.equal(TOKEN_COUNT - PRICE);
       expect(await tokenContract.balanceOf(feistyPrintContract.address)).to.equal(PRICE);
     });
+
+    it('Should emit a Printed event', async function () {
+      expect(
+        await feistyPrintContract['print()']()
+      ).to.emit(feistyPrintContract, 'Printed').withArgs(owner.address, 0);
+    });
   });
 
   describe('PrintMultiple (uint256)', function () {
@@ -176,6 +182,13 @@ describe('Feisty Print contract', function () {
     it('Should limit maximum to 10', async function () {
       expect(feistyPrintContract.printMultiple(11)).to.revertedWith('FeistyPrint: max 10 prints');
     });
+
+    it('Should emit a Printed event per print', async function () {
+      const result = await feistyPrintContract.printMultiple(2);
+
+      expect(result).to.emit(feistyPrintContract, 'Printed').withArgs(owner.address, 0);
+      expect(result).to.emit(feistyPrintContract, 'Printed').withArgs(owner.address, 1);
+    });
   });
 
   describe('Redeem ()', async function () {
@@ -223,6 +236,14 @@ describe('Feisty Print contract', function () {
       expect(await feistyPrintContract.ownerOf(token1)).to.equal(owner.address);
       expect(feistyPrintContract.ownerOf(token2)).to.be.revertedWith('ERC721: owner query for nonexistent token');
     });
+
+    it('Should emit a Redeemed event', async function () {
+      await feistyPrintContract['print()']();
+
+      expect(
+        await feistyPrintContract['redeem()']()
+      ).to.emit(feistyPrintContract, 'Redeemed').withArgs(owner.address, 0);
+    });
   });
 
   describe('Redeem (uint256)', async function () {
@@ -248,6 +269,15 @@ describe('Feisty Print contract', function () {
       expect(await feistyPrintContract.balanceOf(owner.address)).to.equal(1);
       expect(feistyPrintContract.ownerOf(token1)).to.be.revertedWith('ERC721: owner query for nonexistent token');
       expect(await feistyPrintContract.ownerOf(token2)).to.equal(owner.address);
+    });
+
+    it('Should emit a Redeemed event', async function () {
+      await tokenContract.approve(feistyPrintContract.address, PRICE * 2);
+      await feistyPrintContract.printMultiple(2);
+
+      expect(
+        await feistyPrintContract['redeem(uint256)'](1)
+      ).to.emit(feistyPrintContract, 'Redeemed').withArgs(owner.address, 1);
     });
   });
 
@@ -336,6 +366,16 @@ describe('Feisty Print contract', function () {
       expect(feistyPrintContract.ownerOf(token2)).to.be.revertedWith('ERC721: owner query for nonexistent token');
       expect(feistyPrintContract.ownerOf(token3)).to.be.revertedWith('ERC721: owner query for nonexistent token');
       expect(feistyPrintContract.ownerOf(token4)).to.be.revertedWith('ERC721: owner query for nonexistent token');
+    });
+
+    it('Should emit a Redeemed event per redeem', async function () {
+      await tokenContract.approve(feistyPrintContract.address, PRICE * 2);
+      await feistyPrintContract.printMultiple(2);
+
+      const result = await feistyPrintContract.redeemMultiple(2);
+
+      expect(result).to.emit(feistyPrintContract, 'Redeemed').withArgs(owner.address, 0);
+      expect(result).to.emit(feistyPrintContract, 'Redeemed').withArgs(owner.address, 1);
     });
   });
 
