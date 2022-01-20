@@ -110,8 +110,8 @@ contract FeistyPrint is ERC721Enumerable, Ownable {
     require(count <= 10, "FeistyPrint: max 10 prints");
     require(count <= tokenCount, "FeistyPrint: sender doesn't have enough prints");
 
-    for (uint i = 0; i < count; i++) {
-      uint256 tokenToRedeem = tokenOfOwnerByIndex(_msgSender(), tokenCount - 1 - i);
+    for (uint i = 1; i <= count; i++) {
+      uint256 tokenToRedeem = tokenOfOwnerByIndex(_msgSender(), tokenCount - i);
       redeem(tokenToRedeem);
     }
   }

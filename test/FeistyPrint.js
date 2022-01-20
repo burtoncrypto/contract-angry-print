@@ -74,7 +74,7 @@ describe('Feisty Print contract', function () {
 
   describe('contractUri', function () {
     it ('Should default the contractURI', async function () {
-      expect(await feistyPrintContract.contractURI()).to.equal('ipfs://QmR3YWwi8aywM1eHZigH2eLbR3iNvpZpeEQP4VmQhQRsdK');
+      expect(await feistyPrintContract.contractURI()).to.equal('ipfs://QmQfkV8NEzoLYn3LDUbJuTXFUcRHrsPVTcy9ZTVmEMmnMj');
     });
 
     it ('Should allow owner to update the contractURI', async function () {
