@@ -131,7 +131,7 @@ describe('Feisty Print contract', function () {
     it('Should emit a Printed event', async function () {
       expect(
         await feistyPrintContract['print()']()
-      ).to.emit(feistyPrintContract, 'Printed').withArgs(owner.address, 0);
+      ).to.emit(feistyPrintContract, 'Printed').withArgs(owner.address, 0, PRICE);
     });
   });
 
@@ -186,8 +186,8 @@ describe('Feisty Print contract', function () {
     it('Should emit a Printed event per print', async function () {
       const result = await feistyPrintContract.printMultiple(2);
 
-      expect(result).to.emit(feistyPrintContract, 'Printed').withArgs(owner.address, 0);
-      expect(result).to.emit(feistyPrintContract, 'Printed').withArgs(owner.address, 1);
+      expect(result).to.emit(feistyPrintContract, 'Printed').withArgs(owner.address, 0, PRICE);
+      expect(result).to.emit(feistyPrintContract, 'Printed').withArgs(owner.address, 1, PRICE);
     });
   });
 
@@ -242,7 +242,7 @@ describe('Feisty Print contract', function () {
 
       expect(
         await feistyPrintContract['redeem()']()
-      ).to.emit(feistyPrintContract, 'Redeemed').withArgs(owner.address, 0);
+      ).to.emit(feistyPrintContract, 'Redeemed').withArgs(owner.address, 0, PRICE);
     });
   });
 
@@ -277,7 +277,7 @@ describe('Feisty Print contract', function () {
 
       expect(
         await feistyPrintContract['redeem(uint256)'](1)
-      ).to.emit(feistyPrintContract, 'Redeemed').withArgs(owner.address, 1);
+      ).to.emit(feistyPrintContract, 'Redeemed').withArgs(owner.address, 1, PRICE);
     });
   });
 
@@ -374,8 +374,8 @@ describe('Feisty Print contract', function () {
 
       const result = await feistyPrintContract.redeemMultiple(2);
 
-      expect(result).to.emit(feistyPrintContract, 'Redeemed').withArgs(owner.address, 0);
-      expect(result).to.emit(feistyPrintContract, 'Redeemed').withArgs(owner.address, 1);
+      expect(result).to.emit(feistyPrintContract, 'Redeemed').withArgs(owner.address, 0, PRICE);
+      expect(result).to.emit(feistyPrintContract, 'Redeemed').withArgs(owner.address, 1, PRICE);
     });
   });
 
@@ -501,6 +501,23 @@ describe('Feisty Print contract', function () {
       expect(
         await feistyPrintContract.setPrice(newPrice)
       ).to.emit(feistyPrintContract, 'PriceUpdated').withArgs(PRICE, newPrice);
+    });
+
+    it('Should emit an event with the correect prices', async function() {
+      const newPrice = 50;
+      await tokenContract.approve(feistyPrintContract.address, newPrice + PRICE);
+
+      const token1 = await feistyPrintContract.mints();
+      await feistyPrintContract.print();
+
+      await feistyPrintContract.setPrice(newPrice);
+      const token2 = await feistyPrintContract.mints();
+      await feistyPrintContract.print();
+
+      const result = await feistyPrintContract.redeemMultiple(2);
+
+      expect(result).to.emit(feistyPrintContract, 'Redeemed').withArgs(owner.address, token1, PRICE);
+      expect(result).to.emit(feistyPrintContract, 'Redeemed').withArgs(owner.address, token2, newPrice);
     });
   });
 });
