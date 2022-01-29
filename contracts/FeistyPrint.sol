@@ -77,6 +77,8 @@ contract FeistyPrint is ERC721Enumerable, Ownable {
   function printMultiple(uint256 count) public {
     require(count <= 10, "FeistyPrint: max 10 prints");
 
+    require(_token.transferFrom(_msgSender(), address(this), _price * count));
+
     for (uint i = 0; i < count; i++) {
       uint256 tokenId = _mints.current();
 
@@ -86,8 +88,6 @@ contract FeistyPrint is ERC721Enumerable, Ownable {
       _safeMint(_msgSender(), tokenId);
       _mints.increment();
     }
-
-    _token.transferFrom(_msgSender(), address(this), _price * count);
   }
 
   function redeem() external {
@@ -101,7 +101,7 @@ contract FeistyPrint is ERC721Enumerable, Ownable {
     emit Redeemed(_msgSender(), tokenId, tokenPrice);
 
     _burn(tokenId);
-    _token.transfer(_msgSender(), tokenPrice);
+    require(_token.transfer(_msgSender(), tokenPrice));
   }
 
   function redeemMultiple(uint256 count) public {
