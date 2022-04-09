@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract FeistyPrint is ERC721Enumerable, Ownable {
+contract Print is ERC721Enumerable, Ownable {
   using SafeERC20 for IERC20;
   using Counters for Counters.Counter;
 
@@ -23,12 +23,12 @@ contract FeistyPrint is ERC721Enumerable, Ownable {
   string _tokenURI;
   string _contractURI;
 
-  constructor(IERC20 token_, uint256 price_) ERC721("Feisty Doge Print", "FDP") {
+  constructor(IERC20 token_, uint256 price_) ERC721("Angry Doge Print", "ADP") {
     _token = token_;
     _price = price_;
 
-    _tokenURI = "ipfs://QmNUUqGtwKg4TzVp4cAXE6aeBprxPFcoKNvTFFi58dnZva";
-    _contractURI = "ipfs://QmQfkV8NEzoLYn3LDUbJuTXFUcRHrsPVTcy9ZTVmEMmnMj";
+    _tokenURI = "ipfs://QmdUmdwEKFAPyo3TUzne6XqMuULydc258YWjk2MWMh8V55";
+    _contractURI = "ipfs://QmbB5tr7j54q6U7gBvpVJsQ1J3w9g4BLAvgN9ui44S7ycZ";
   }
 
   // -- Admin -- //
@@ -75,7 +75,7 @@ contract FeistyPrint is ERC721Enumerable, Ownable {
   }
 
   function printMultiple(uint256 count) public {
-    require(count <= 10, "FeistyPrint: max 10 prints");
+    require(count <= 10, "Print: max 10 prints");
 
     require(_token.transferFrom(_msgSender(), address(this), _price * count));
 
@@ -95,7 +95,7 @@ contract FeistyPrint is ERC721Enumerable, Ownable {
   }
 
   function redeem(uint256 tokenId) public {
-    require(ownerOf(tokenId) == _msgSender(), "FeistyPrint: sender does not own token");
+    require(ownerOf(tokenId) == _msgSender(), "Print: sender does not own token");
 
     uint256 tokenPrice = _tokenPrices[tokenId];
     emit Redeemed(_msgSender(), tokenId, tokenPrice);
@@ -107,8 +107,8 @@ contract FeistyPrint is ERC721Enumerable, Ownable {
   function redeemMultiple(uint256 count) public {
     uint256 tokenCount = balanceOf(_msgSender());
 
-    require(count <= 10, "FeistyPrint: max 10 prints");
-    require(count <= tokenCount, "FeistyPrint: sender doesn't have enough prints");
+    require(count <= 10, "Print: max 10 prints");
+    require(count <= tokenCount, "Print: sender doesn't have enough prints");
 
     for (uint i = 1; i <= count; i++) {
       uint256 tokenToRedeem = tokenOfOwnerByIndex(_msgSender(), tokenCount - i);

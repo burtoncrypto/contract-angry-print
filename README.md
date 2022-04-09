@@ -1,4 +1,4 @@
-# Feisty Prints
+# Angry Prints
 
 ## Installation
 Install dependencies
@@ -25,4 +25,4 @@ Deploy the print contract, pass the address of the ERC20 token to use
 Currently only Rinkeby deployment has been tested. Once either contract is deployed a command is printed which can be used to verify the contract on etherscan (currently this has Rinkey hardcoded).
 
 ## ERC721 metadata
-The metadata files for the FeistyPrint contract have been uploaded to IPFS and hardcoded in the contract. The source for these files can be found in the metadata folder.
+The metadata files for the print contract have been uploaded to IPFS and hardcoded in the contract. The source for these files can be found in the metadata folder.
